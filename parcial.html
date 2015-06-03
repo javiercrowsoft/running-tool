@@ -1,0 +1,119 @@
+<html>
+<head>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+    <div class="jumbotron">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>Parcial</h3>
+                </div>                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <label>Time</label>
+                <input id="time">                    
+            </div>
+            <div class="col-md-3">
+                <label>Distance</label>
+                <input id="distance">                    
+            </div>
+            <div class="col-md-3">
+                <button id='cmdCalculate'>Calculate</button>
+            </div>            
+        </div>
+        <div class="row" style="margin-top: 15px;">
+            <div class="col-md-12">
+                <table class="table table-stripped">
+                    <thead>
+                        <th>Distance</th>
+                        <th>Time</th>                        
+                    </thead>
+                    <tbody id="marks">
+                        <tr><td>-</td><td>-</td></tr>
+                    </tbody>    
+                </table>
+            </div>
+        </div>
+    </div>
+<script>
+(function() {
+    distances = [100,200,300,400,500,600,800,1000,1200,1500,1600,1609,2000,3000,5000,10000,21097,42195];
+    time = $('#time');
+    distance = $('#distance');
+    marks = $('#marks');
+    
+    var timeOnClick = function(e) {
+        calculateMarks();
+    };
+    
+    var distanceOnClick = function(e) {
+        calculateMarks();
+    };
+    
+    $('#cmdCalculate').click(function(e) {
+        calculateMarks();
+    });    
+
+    toHHMMSS = function (seconds) {
+        var sec_num = parseInt(seconds, 10); // don't forget the second param
+        var hours   = Math.floor(sec_num / 3600);
+        var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+        var seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+        if (hours   < 10) {hours   = "0"+hours;}
+        if (minutes < 10) {minutes = "0"+minutes;}
+        if (seconds < 10) {seconds = "0"+seconds;}
+        var time    = hours+':'+minutes+':'+seconds;
+        return time;
+    }
+    
+    var getTime = function(distance, time) {
+        return toHHMMSS((distance * time).toString());
+    };
+    
+    var calculateMarks = function() {
+        var t = time.val();
+        var d = distance.val();
+        try {
+            t = parseTime(t) / 1000;
+            d = parseInt(d);
+            d /= 100; // distance in 100 meters unit
+            t = t / d; // seconds to run 100 meters
+            
+            var body = $('<tbody>');
+            
+            for(var i = 0; i < distances.length; i += 1) {
+                var row = $('<tr>');
+                var td = $('<td>');
+                td.html(distances[i]);
+                row.append(td);                
+                td = $('<td>');
+                td.html(getTime(distances[i]/100.0, t));
+                row.append(td);
+                body.append(row);
+            }            
+            marks.parent().get(0).replaceChild(body.get(0), marks.get(0));
+            marks = body;
+        }
+        catch(e) {
+            // TODO: implement this
+        }
+    };
+    
+    var parseTime = function(timestr) {
+        var time = timestr.split(/\:|\-/g);
+        return Date.UTC(1970,0,1,0,time[0],time[1],0);
+    };
+    
+}())
+</script>
+</body>
+</html>
